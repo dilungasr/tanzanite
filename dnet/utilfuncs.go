@@ -1,7 +1,7 @@
 package dnet
 
 import (
-	tz "github.com/dilungasr/tanzanite"
+	"github.com/dilungasr/tanzanite/types"
 )
 
 //deleteContext is for deleting the context from the hub
@@ -39,7 +39,7 @@ func assignData(dataIndex, statusCode *int, statusAndCode []interface{}, funcNam
 	switch {
 	case len(statusAndCode) == 2:
 		// check if the first data is the code
-		if !tz.Is("Int", statusAndCode[0]) {
+		if !types.Is("Int", statusAndCode[0]) {
 			panic("The format of the " + funcName + "() should be " + funcName + "(statusCode int, Data interface{}). You can also omit the statusCode if you want it to be OK.")
 		}
 
