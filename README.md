@@ -1,2 +1,4 @@
 # tanzanite
-Golang upcoming full-featured framewok built on top of Gorilla web toolkit.
+Golang tools for rapid web development.(*Upcoming framework*)
+
+# Under Development and testing
