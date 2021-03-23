@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+
+	"github.com/dilungasr/tanzanite/types"
 )
 
 // SendJSON for sending error in json format and providing the error code
@@ -30,7 +32,7 @@ func Send(w http.ResponseWriter, statusCodeAndData ...interface{}) {
 
 	switch {
 	// for structs and maps... should be ecoded to json
-	case Is("struct", statusCodeAndData[dataIndex]) || Is("map", statusCodeAndData[dataIndex]):
+	case types.Is("struct", statusCodeAndData[dataIndex]) || types.Is("map", statusCodeAndData[dataIndex]):
 		jsonSender(w, statusCode, statusCodeAndData[dataIndex])
 		// for any other data types should be sent as text
 	default:
@@ -99,7 +101,7 @@ func stringSender(w http.ResponseWriter, statusCode int, data interface{}) {
 	w.WriteHeader(statusCode)
 
 	// send to the client
-	io.WriteString(w, String(data))
+	io.WriteString(w, types.String(data))
 }
 
 // for checking the data passed and the position to find the specific data within the variadic parameters
@@ -122,7 +124,7 @@ func positionData(dataIndex, statusCode *int, statusCodeAndData []interface{}, f
 // Helps to ensure if the second parameter is a code or not
 func ensureStatusCode(statusCodeAndData []interface{}) {
 	// check if the code is there
-	if !Is("int", statusCodeAndData[0]) {
+	if !types.Is("int", statusCodeAndData[0]) {
 		panic(
 			"TZ: Arrangement in the Send() should be Send(w http.ResponseWriter, code int, data any) or you can omit the status code if you want it to be OK.",
 		)
