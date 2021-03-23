@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	tz "github.com/dilungasr/tanzanite"
+	"github.com/dilungasr/tanzanite/types"
 )
 
 // Errors is the main errors container for tanzanite's validator
@@ -16,7 +17,7 @@ func Struct(val interface{}) (map[string][]string, bool) {
 	// empty the Errors first
 	Errors = map[string][]string{}
 	// check if it's not struct
-	if !tz.Is("struct", val) {
+	if !types.Is("struct", val) {
 		panic("TZ: Non-struct argument passed in Struct()")
 	}
 

@@ -1,4 +1,4 @@
-package tz
+package types
 
 import (
 	"encoding/json"
