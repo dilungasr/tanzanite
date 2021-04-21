@@ -26,7 +26,7 @@ func Struct(val interface{}) (map[string][]string, bool) {
 	// loop to all fields for validation
 	for i := 0; i < t1.NumField(); i++ {
 		// if the field is to be validated
-		if v, ok := t1.Field(i).Tag.Lookup("vdt"); ok {
+		if v, ok := t1.Field(i).Tag.Lookup("valid"); ok {
 			fullField := map[string]interface{}{}
 
 			// use json name if present, or use the original value
