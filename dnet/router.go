@@ -146,7 +146,7 @@ func (r *MainRouter) ticketCleaner() {
 
 			// enter in the tickets and remove the expired tickets
 			for i, ticket := range r.tickets {
-				_, _, expireTimeString := ticketParts(ticket)
+				_, _, expireTimeString, _ := ticketParts(ticket)
 				expireTime, err := time.Parse(time.RFC3339, expireTimeString)
 				if err != nil {
 					panic(err)
