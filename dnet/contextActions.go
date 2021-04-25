@@ -427,7 +427,7 @@ func (c *Context) Logout() {
   ----------------------------------------------------------
 */
 
-// Set store value in the connection
+// Set stores value in the connection.
 func (c *Context) Set(key string, val interface{}) {
 	c.values[key] = val
 }
