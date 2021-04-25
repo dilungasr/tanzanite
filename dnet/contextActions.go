@@ -1,6 +1,7 @@
 package dnet
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -418,6 +419,25 @@ func (c *Context) Logout() {
 	// unregister the clinet context
 	c.hub.unregister <- c
 	c.conn.Close()
+}
+
+/*
+  -----------------------------------------------------------
+  |  SETTING VALUES IN AND GETTING VALUES FROM CONNECTION   |
+  ----------------------------------------------------------
+*/
+func (c *Context) Set(key string, val interface{}) {
+	c.values[key] = val
+}
+
+func (c *Context) Get(key string) (val interface{}, err error) {
+	val, ok := c.values[key]
+	if !ok {
+		return val, fmt.Errorf("Dnet: value not registered in the connection")
+	}
+
+	return val, nil
+
 }
 
 // By Dilunga SR

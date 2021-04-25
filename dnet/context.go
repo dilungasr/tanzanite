@@ -15,7 +15,7 @@ type Context struct {
 	// send is for listening data sending to the Context
 	send chan interface{}
 	// values is for installing request values
-	Values map[string]interface{}
+	values map[string]interface{}
 	//conn is a websocket connection
 	conn *websocket.Conn
 
@@ -119,7 +119,7 @@ func (c *Context) readPump() {
 		}
 
 		// initialize and pour out the value from the dnet message to the context to make it available in the api context
-		c.Values = make(map[string]interface{})
+		c.values = make(map[string]interface{})
 		c.action = msg.Action
 		c.Data = msg.Data
 		c.Rec = msg.Rec
