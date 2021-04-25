@@ -316,7 +316,9 @@ func (c *Context) AuthTicket(infoText ...string) (ID string, ok bool) {
 		infoText = []string{"Please login to access this resource"}
 	}
 
-	c.Binder(&ticketFromClient)
+	if !c.Binder(&ticketFromClient) {
+		return
+	}
 
 	//get the ticket string from the client to plain text
 	ticketString, valid := tzcrypt.Decrypter(ticketFromClient.Ticket, Router1.ticketSecrete, Router1.ticketIV)
@@ -384,10 +386,13 @@ func (c *Context) Fire(action string) {
 */
 
 // Binder is for extracting data from the client and storing it to the passed pointer v
-func (c *Context) Binder(v interface{}) {
+func (c *Context) Binder(v interface{}) (valid bool) {
 	if err := mapstructure.Decode(c.Data, v); err != nil {
-		panic(err)
+		c.SendBack(422, "Unprocessable entities")
+		return false
 	}
+
+	return true
 }
 
 /*
