@@ -426,6 +426,7 @@ func (c *Context) Logout() {
   |  SETTING VALUES IN AND GETTING VALUES FROM CONNECTION   |
   ----------------------------------------------------------
 */
+
 // Set store value in the connection
 func (c *Context) Set(key string, val interface{}) {
 	c.values[key] = val
