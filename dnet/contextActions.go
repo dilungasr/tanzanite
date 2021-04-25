@@ -443,4 +443,10 @@ func (c *Context) Get(key string) (val interface{}, err error) {
 
 }
 
+/*
+  -----------------------------------------------------------
+  |  WORKING WITH EMAILS   |
+  ----------------------------------------------------------
+*/
+
 // By Dilunga SR
