@@ -10,16 +10,6 @@ import (
 //ActionHandler is a function wich receives Ctx
 type ActionHandler func(*Context)
 
-// ticket is the authentication information of the user
-type ticket struct {
-	// id is the user id
-	id string
-	// ip is the ip of the request
-	ip string
-	// time is the time the request received
-	expireTime string
-}
-
 // Options is used to take all the
 type Options struct {
 	TicketAge time.Duration
@@ -37,7 +27,7 @@ type MainRouter struct {
 	// tells wether use set the last seen or not
 	isLastSeenHandlerSet bool
 	// tickets is the store place of all tickets given to the user before they expire
-	tickets []ticket
+	tickets []string
 	// ticketKey is the key for cryptography of the ticket
 	ticketIV []byte
 
@@ -156,7 +146,8 @@ func (r *MainRouter) ticketCleaner() {
 
 			// enter in the tickets and remove the expired tickets
 			for i, ticket := range r.tickets {
-				expireTime, err := time.Parse(time.RFC3339, ticket.expireTime)
+				_, _, expireTimeString := ticketParts(ticket)
+				expireTime, err := time.Parse(time.RFC3339, expireTimeString)
 				if err != nil {
 					panic(err)
 				}

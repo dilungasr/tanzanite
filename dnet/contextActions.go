@@ -2,7 +2,6 @@ package dnet
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/dilungasr/tanzanite/tzcrypt"
@@ -308,53 +307,33 @@ func (c *Context) AuthTicket() (ID string, valid bool) {
 
 	c.Binder(&ticketFromClient)
 
-	// split the ticket into parts
-	ticketParts := strings.Split(ticketFromClient.Ticket, ",")
-	if len(ticketParts) == 0 || len(ticketParts) > 3 {
-		c.conn.SetWriteDeadline(time.Now().Add(writeWait))
-		c.conn.WriteJSON(Response{c.action, 400, "Bad request", c.ID})
-		return "", false
-	}
+	//get the ticket string from the client to plain text
+	ticketString := tzcrypt.Decrypter(ticketFromClient.Ticket, Router1.ticketSecrete, Router1.ticketIV)
 
-	//exctract the encrypted pieces
-	encID := ticketParts[0]
-	encIP := ticketParts[1]
-	encExpireTime := ticketParts[2]
-
-	// decrypt the data
-	ID = tzcrypt.Decrypter(encID, Router1.ticketSecrete, Router1.ticketIV)
-	IP := tzcrypt.Decrypter(encIP, Router1.ticketSecrete, Router1.ticketIV)
-	expireTime := tzcrypt.Decrypter(encExpireTime, Router1.ticketSecrete, Router1.ticketIV)
-
-	// validate the ticket
-	valid = false
 	for i, ticket := range Router1.tickets {
-		if ticket.id == ID && ticket.ip == IP && ticket.expireTime == expireTime {
+		if ticketString == ticket {
+			ID, IP, expireTimeString, ok := ticketParts(ticket, c)
+			if !ok {
+				return ID, false
+			}
 			//  compare the expireTime and this time to see if the ticket expired or not
-			ticketExpireTime, err := time.Parse(time.RFC3339, ticket.expireTime)
+			expireTime, err := time.Parse(time.RFC3339, expireTimeString)
 			if err != nil {
 				panic(err)
 			}
 
 			// if the ticket expired
-			if time.Now().Local().After(ticketExpireTime) {
+			if time.Now().Local().After(expireTime) {
 				//  delete the ticket
 				Router1.tickets = append(Router1.tickets[:i], Router1.tickets[i+1:]...)
 			} else {
-				// if the ticket is valid
-				valid = true
-				break
+
+				c.IP = IP
+				c.authed = true
+				c.ID = ID
+				return ID, valid
 			}
 		}
-	}
-
-	// if the ticket is valid
-	// set the ip address in the context
-	if valid {
-		c.IP = IP
-		c.authed = true
-		c.ID = ID
-		return ID, valid
 	}
 
 	// if not valid ... close the connection

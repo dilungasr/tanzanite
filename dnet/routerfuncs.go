@@ -43,16 +43,16 @@ func SendTicket(r *http.Request, w http.ResponseWriter, ID string) {
 	}
 
 	// encrypt the tikcet data to be sent to the client
-	encTimeStamp := tzcrypt.Encrypter(expireTime, secreteKey, iv)
-	encIP := tzcrypt.Encrypter(IP, secreteKey, iv)
-	encID := tzcrypt.Encrypter(ID, secreteKey, iv)
+	ticketToSend := ID + "," + IP + "," + expireTime
+
+	encTicketToSend := tzcrypt.Encrypter(ticketToSend, secreteKey, iv)
 
 	// save the ticket in the Router1
 	newTicket := ticket{ID, IP, expireTime}
 	Router1.tickets = append(Router1.tickets, newTicket)
 
 	// send the ticket to the client
-	tz.Send(w, tz.Map{"ticket": encID + "," + encIP + "," + encTimeStamp})
+	tz.Send(w, tz.Map{"ticket": encTicketToSend})
 
 }
 
