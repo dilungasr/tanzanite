@@ -301,14 +301,30 @@ type clientTicket struct {
 	Ticket string `json:"ticket"`
 }
 
-// AuthTicket authenticates the ticket and  return the user id to associate and query in the database
-func (c *Context) AuthTicket() (ID string, valid bool) {
+// AuthTicket authenticates the ticket and  returns the user ID provided in the SendTicket().
+//
+// ok is also returned to inform you if user authentication fails or not. If failed you, all you can do
+// is simply "return" to finish your reponse cycle since AuthTicket helps you to respond to the client
+// with the infoText you provide or the default infoText
+//
+// Infotext is a message to send back to the client when user authentication fails.
+// It defaults to "Please login to access this resource" if you do not provide it.
+func (c *Context) AuthTicket(infoText ...string) (ID string, ok bool) {
 	var ticketFromClient clientTicket
+
+	if len(infoText) == 0 {
+		infoText = []string{"Please login to access this resource"}
+	}
 
 	c.Binder(&ticketFromClient)
 
 	//get the ticket string from the client to plain text
-	ticketString := tzcrypt.Decrypter(ticketFromClient.Ticket, Router1.ticketSecrete, Router1.ticketIV)
+	ticketString, valid := tzcrypt.Decrypter(ticketFromClient.Ticket, Router1.ticketSecrete, Router1.ticketIV)
+	// if the ticketString is not avalid base64 string
+	if !valid {
+		c.SendBack(400, "Bad Request")
+		return ID, false
+	}
 
 	for i, ticket := range Router1.tickets {
 		if ticketString == ticket {
@@ -337,7 +353,7 @@ func (c *Context) AuthTicket() (ID string, valid bool) {
 	}
 
 	// if not valid ... close the connection
-	c.SendBack(401, "Please login to access this resource")
+	c.SendBack(401, infoText[0])
 	c.Dispose()
 	return "", false
 }
