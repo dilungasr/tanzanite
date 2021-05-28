@@ -21,13 +21,22 @@ var hub *Hub = &Hub{
 	hasInitialized: false,
 }
 
-// Init initializes dnet hub monitoring.
+// Init initializes dnet hub monitoring. You should pass your configurations in this function
+// if you are using v1.0.208-beta and above. Otherwise you should stick with Config() function
+//
 // It should be called only once
-func Init() {
+func Init(options ...Options) {
+	// makesure that Init is called only once
 	if hub.hasInitialized {
 		panic("Dnet: Dnet cannot be initialized more than once")
 	}
 
+	//take ticketAge configurations if user has configured the time for ticket to expire
+	if options[0].TicketAge > 0 {
+		Router1.ticketAge = options[0].TicketAge
+	}
+
+	//mark that Init has been called to prevent future repeated calling of this function
 	hub.hasInitialized = true
 	fmt.Println("Dnet initialized...")
 	go hub.Run()

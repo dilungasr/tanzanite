@@ -177,8 +177,8 @@ func (c *Context) expireContext() {
 	}
 }
 
-// Dnet inits Dilunga Net in the given endpoint
-func Dnet(w http.ResponseWriter, r *http.Request, allowedOrigin ...string) {
+// Connect inits Dilunga Net's connection in the given endpoint
+func Connect(w http.ResponseWriter, r *http.Request, allowedOrigin ...string) {
 
 	//hub not started monitoring
 	if !hub.hasInitialized {

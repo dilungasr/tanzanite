@@ -54,11 +54,3 @@ func SendTicket(r *http.Request, w http.ResponseWriter, ID string) {
 	tz.Send(w, tz.Map{"ticket": encTicket})
 
 }
-
-// Config configures the settings of your dnet network
-func Config(options Options) {
-	//if user configured the ticket expire time
-	if options.TicketAge > 0 {
-		Router1.ticketAge = options.TicketAge
-	}
-}

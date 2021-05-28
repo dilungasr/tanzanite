@@ -115,8 +115,6 @@ func (c *Context) Multicast(userIDs []string, statusAndData ...interface{}) {
 				default:
 					deleteContext(context)
 				}
-
-				break
 			}
 		}
 	}
@@ -274,7 +272,7 @@ func (c *Context) Rooms(roomsIDs ...string) {
 					// add the context to the room if no registered
 					if !found {
 						// append user to the rooms
-						contexts = append(contexts, c)
+						c.hub.rooms[registeredRoom] = append(contexts, c)
 
 					}
 					break
@@ -403,7 +401,7 @@ func (c *Context) Binder(v interface{}) (valid bool) {
 */
 
 // Dispose discards the client connection without calling LastSeen for saving any lastSeen info for the clinet connection
-// Useful for expired unauthorized client connection
+// Useful for expired unauthorized client connections
 func (c *Context) Dispose() {
 	c.disposed = true
 	c.hub.unregister <- c
