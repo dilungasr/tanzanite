@@ -1,7 +1,6 @@
 package dnet
 
 import (
-	"log"
 	"strings"
 	"time"
 
@@ -20,34 +19,34 @@ import (
 // 1 stands for bad request i.e client side has sent the wrong link
 //
 // 2 means everything is fine! and with this status you can get the user ID.
-func CheckLink(link string) (ID string, status int) {
+func CheckLink(link string) (userID, linkID string, status int) {
 	plainLink, ok := tzcrypt.Decrypter(link, Router1.ticketSecrete, Router1.ticketIV)
 
 	if !ok {
-		return ID, 1
+		return userID, linkID, 1
 	}
 
 	linkParts := strings.Split(plainLink, ",")
 
-	if len(linkParts) != 2 {
-		return ID, 1
+	if len(linkParts) != 3 {
+		return userID, linkID, 1
 	}
 
-	expireTimeString := linkParts[1]
-	IDString := linkParts[0]
+	expireTimeString := linkParts[2]
+	userID = linkParts[0]
+	linkID = linkParts[1]
 
 	expireTime, err := time.Parse(time.RFC3339, expireTimeString)
 	if err != nil {
-		log.Println(err)
-		return ID, 1
+		return userID, linkID, 1
 	}
 
 	//check if the link has expired
 	if time.Now().Local().After(expireTime) {
-		return ID, 0
+		return userID, linkID, 0
 	}
 
-	return IDString, 2
+	return userID, linkID, 2
 
 }
 
@@ -57,7 +56,7 @@ func CheckLink(link string) (ID string, status int) {
 //
 // minutes is a life time of the link in minutes i.e after that amount of time the link becomes expired.
 //Default time is 60 minutes
-func Link(ID string, minutes ...time.Duration) (link string, err error) {
+func Link(userID, linkID string, minutes ...time.Duration) (link string, err error) {
 
 	// default time is 1 hour
 	if len(minutes) == 0 {
@@ -71,5 +70,5 @@ func Link(ID string, minutes ...time.Duration) (link string, err error) {
 
 	expireTimeString := string(expireTimeBytes)
 
-	return tzcrypt.Encrypter(ID+","+expireTimeString, Router1.ticketSecrete, Router1.ticketIV), nil
+	return tzcrypt.Encrypter(userID+","+linkID+","+expireTimeString, Router1.ticketSecrete, Router1.ticketIV), nil
 }
