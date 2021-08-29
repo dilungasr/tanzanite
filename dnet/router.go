@@ -13,7 +13,7 @@ type ActionHandler func(*Context)
 // Options is used to take all the
 type Options struct {
 	TicketAge time.Duration
-	// MaxSize   int64
+	MaxSize   int64
 }
 
 // MainRouter is for routing websocket actions
