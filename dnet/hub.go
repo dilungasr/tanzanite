@@ -36,6 +36,11 @@ func Init(options ...Options) {
 		Router1.ticketAge = options[0].TicketAge
 	}
 
+	//take maximum message size configuration if user set
+	if options[0].MaxSize > 0 {
+		Router1.maxSize = options[0].MaxSize
+	}
+
 	//mark that Init has been called to prevent future repeated calling of this function
 	hub.hasInitialized = true
 	fmt.Println("Dnet initialized...")

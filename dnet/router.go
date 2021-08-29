@@ -13,6 +13,7 @@ type ActionHandler func(*Context)
 // Options is used to take all the
 type Options struct {
 	TicketAge time.Duration
+	MaxSize   int64
 }
 
 // MainRouter is for routing websocket actions
@@ -30,6 +31,9 @@ type MainRouter struct {
 	tickets []string
 	// ticketKey is the key for cryptography of the ticket
 	ticketIV []byte
+
+	// max message size
+	maxSize int64
 
 	// ticketSecrete is the secrete key for tecket encryption
 	ticketSecrete string
@@ -183,4 +187,5 @@ var Router1 *MainRouter = &MainRouter{
 	actionHandlers: make(map[string][]ActionHandler), routeMatchers: make(map[string][]ActionHandler),
 	ticketSecrete: tzcrypt.RandString(32), ticketIV: tzcrypt.RandBytes(16),
 	ticketAge: 30 * time.Second,
+	maxSize:   512,
 }

@@ -21,8 +21,6 @@ type Context struct {
 
 	// Action is the current action received from the client
 	action string
-	// status is status code set by the Status
-	status int
 	//ID is  a user id to assocaite it with the user connection
 	ID string
 	// Data is where the data sent from the client stored
@@ -66,8 +64,6 @@ const (
 	pongWait = 60 * time.Second
 	//pingWait is the time to wait before sending the next pingMessage to the peer... Must be smaller than the pongWait
 	pingPeriod = (9 * pongWait) / 10
-	// maximum message size to write to the peer
-	maxMessageSize = 512
 )
 
 var upgrader = websocket.Upgrader{
@@ -92,7 +88,7 @@ func (c *Context) readPump() {
 	}()
 
 	// configure the connection values
-	c.conn.SetReadLimit(maxMessageSize)
+	c.conn.SetReadLimit(Router1.maxSize)
 	c.conn.SetReadDeadline(time.Now().Add(pongWait))
 	c.conn.SetPongHandler(func(string) error { c.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 
@@ -101,6 +97,7 @@ func (c *Context) readPump() {
 		var msg Message
 		err := c.conn.ReadJSON(&msg)
 		if err != nil {
+
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Printf("Dnet: %v", err)
 
@@ -155,7 +152,7 @@ func (c *Context) writePump() {
 
 			// write the ping message
 			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-				log.Printf("Websocket error: %v", err)
+				log.Printf("Dnet error: %v", err)
 				return
 			}
 		}
