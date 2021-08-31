@@ -2,6 +2,7 @@ package dnet
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/dilungasr/tanzanite/tzcrypt"
@@ -386,6 +387,7 @@ func (c *Context) Fire(action string) {
 // Binder is for extracting data from the client and storing it to the passed pointer v
 func (c *Context) Binder(v interface{}) (valid bool) {
 	if err := mapstructure.Decode(c.Data, v); err != nil {
+		log.Println("Dnet: ", err)
 		c.SendBack(422, "Unprocessable entities")
 		return false
 	}
