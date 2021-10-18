@@ -1,6 +1,3 @@
 # Tanzanite
 
-Golang tools for rapid web development.(_Upcoming framework_)
-
-# Under Development and testing
-
+Golang tools for rapid web development under the standard library
