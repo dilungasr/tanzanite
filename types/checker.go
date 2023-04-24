@@ -1,7 +1,6 @@
 package types
 
 import (
-	"encoding/json"
 	"reflect"
 	"strings"
 	"sync"
@@ -54,11 +53,11 @@ func Is(typ string, data interface{}) bool {
 
 // String coverts v to string
 func String(v interface{}) string {
-	jsn, err := json.Marshal(v)
-	if err != nil {
-		panic("TZ: Error encoding the data to JSON")
+	str, ok := v.(string)
+	if !ok {
+		panic("TZ: error converting interface to string")
 	}
 
 	// return the resulted string from converstion
-	return string(jsn)
+	return str
 }
